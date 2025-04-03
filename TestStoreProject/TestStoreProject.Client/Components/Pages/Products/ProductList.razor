@@ -1,0 +1,53 @@
+﻿@page "/products"
+@inject HttpClient Http
+
+<h3>لیست محصولات</h3>
+
+@if (products is null)
+{
+    <p>در حال بارگذاری...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>نام</th>
+                <th>قیمت</th>
+                <th>دسته‌بندی</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Price.ToString("N0")</td>
+                    <td>@product.CategoryId</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">ویرایش</button>
+                        <button class="btn btn-sm btn-danger">حذف</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<ProductDto>? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Http.GetFromJsonAsync<List<ProductDto>>("api/products");
+    }
+
+    public class ProductDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public int CategoryId { get; set; }
+    }
+}
