@@ -1,27 +1,25 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider>
-    <MudDialogProvider>
-        <MudSnackbarProvider>
-            <MudLayout>
-                <MudAppBar Color="Color.Primary" Elevation="4">
-                    <MudText Typo="Typo.h6">فروشگاه من</MudText>
-                </MudAppBar>
+<MudThemeProvider  />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudLayout>
+    <MudAppBar Color="Color.Primary" Elevation="4">
+        <MudText Typo="Typo.h6">فروشگاه من</MudText>
+    </MudAppBar>
 
-                <MudDrawer Open="true" Variant="DrawerVariant.Temporary" Elevation="2">
-                    <MudNavMenu>
-                        <MudNavLink Href="/products" Icon="@Icons.Material.Filled.List">محصولات</MudNavLink>
-                        <MudNavLink Href="/categories" Icon="@Icons.Material.Filled.Category">دسته‌بندی‌ها</MudNavLink>
-                    </MudNavMenu>
-                </MudDrawer>
+    <MudDrawer Open="true" Variant="DrawerVariant.Temporary" Elevation="2">
+        <MudNavMenu>
+            <MudNavLink Href="/products" Icon="@Icons.Material.Filled.List">محصولات</MudNavLink>
+            <MudNavLink Href="/categories" Icon="@Icons.Material.Filled.Category">دسته‌بندی‌ها</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
 
-                <MudMainContent>
-                    @Body
-                </MudMainContent>
-            </MudLayout>
-        </MudSnackbarProvider>
-    </MudDialogProvider>
-</MudThemeProvider>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
