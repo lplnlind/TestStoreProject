@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.ValueObjects
 {
-    public class Money : BaseEntity
+    public class Money
     {
         public decimal Amount { get; }
         public string Currency { get; } = "USD";

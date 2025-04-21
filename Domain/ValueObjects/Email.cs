@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.ValueObjects
 {
-    public class Email : BaseEntity
+    public class Email
     {
         public string Value { get; private set; }
 
