@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TestStoreProject.Controllers
@@ -16,6 +17,7 @@ namespace TestStoreProject.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
@@ -23,6 +25,7 @@ namespace TestStoreProject.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var category = await _categoryService.GetCategoryByIdAsync(id);
@@ -33,13 +36,15 @@ namespace TestStoreProject.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CategoryDto categoryDto)
         {
             await _categoryService.AddCategoryAsync(categoryDto);
-            return Ok(); // یا CreatedAtAction(...) برای مسیر حرفه‌ای‌تر
+            return Ok(); 
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] CategoryDto categoryDto)
         {
             if (id != categoryDto.Id)
@@ -50,6 +55,7 @@ namespace TestStoreProject.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await _categoryService.DeleteCategoryAsync(id);

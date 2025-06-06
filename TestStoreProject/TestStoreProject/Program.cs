@@ -2,21 +2,17 @@ using TestStoreProject.Client.Components;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Application.DependencyInjection;
-using MudBlazor.Services;
 using Application.Setting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MudBlazor.Services;
+using TestStoreProject.Client.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// AddInfrastructure
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddInfrastructure(connectionString);
-
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication(builder.Configuration);
-
-builder.Services.AddMudServices();
 
 // Bind JwtSettings
 var jwtSettings = new JwtSettings();
@@ -44,17 +40,10 @@ builder.Services.AddAuthentication(options =>
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddControllers();
-
-builder.Services.AddHttpClient("Api", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7207");
-});
-
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Api"));
+builder.Services.AddClient();
 
 var app = builder.Build();
 
@@ -79,7 +68,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode();
 
 app.MapControllers();

@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using MudBlazor.Services;
+using TestStoreProject.Client.DependencyInjection;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.Services.AddMudServices();
+builder.Services.AddClient();
+
 
 await builder.Build().RunAsync();

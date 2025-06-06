@@ -13,9 +13,6 @@
             ZipCode = zipCode;
         }
 
-        public Address()
-        {
-            
-        }
+        public Address() { }
     }
 }

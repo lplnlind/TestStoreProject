@@ -2,11 +2,6 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Persistence.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -51,7 +46,8 @@ namespace Application.Services
             {
                 Name = dto.Name,
                 Price = dto.Price,
-                CategoryId = dto.CategoryId
+                CategoryId = dto.CategoryId,
+                ImageUrl = dto.ImageUrl ?? string.Empty
             };
 
             await _productRepository.AddAsync(product);
@@ -65,6 +61,7 @@ namespace Application.Services
             product.Name = dto.Name;
             product.Price = dto.Price;
             product.CategoryId = dto.CategoryId;
+            product.ImageUrl = dto.ImageUrl ?? string.Empty;
 
             await _productRepository.UpdateAsync(product);
         }

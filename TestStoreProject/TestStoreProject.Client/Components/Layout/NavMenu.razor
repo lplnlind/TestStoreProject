@@ -1,30 +1,62 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">TestStoreProject</a>
-    </div>
-</div>
+﻿@inject AuthenticationStateProvider AuthProvider
+@inject IAuthClient AuthClient
+@inject NavigationManager NavigationManager
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<MudAppBar>
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+    <MudText>فروشگاه من</MudText>
+    <MudSpacer />
+    <AuthorizeView>
+        <Authorized>
+            <MudText Typo="Typo.subtitle2" Class="mr-2">سلام، @Username</MudText>
+            <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="Logout">خروج</MudButton>
+        </Authorized>
+        <NotAuthorized>
+            <MudButton Variant="Variant.Outlined" Color="Color.Inherit" OnClick='() => NavigationManager.NavigateTo("/login")'>ورود</MudButton>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudAppBar>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+<MudDrawer @bind-Open="@_drawerOpen">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">ر ی ح ا ن</MudText>
+    </MudDrawerHeader>
 
-@*         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+    <MudNavMenu>
+        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">صفحه اصلی</MudNavLink>
+        <MudNavLink Href="/admin/products" Icon="@Icons.Material.Filled.List">محصولات</MudNavLink>
+        <MudNavLink Href="/admin/categories" Icon="@Icons.Material.Filled.Category">دسته‌بندی‌ها</MudNavLink>
+        <MudNavLink Href="/cart" Match="NavLinkMatch.All">🛒 سبد خرید</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div> *@
-    </nav>
-</div>
 
+@code {
+    bool _drawerOpen = false;
+
+    public void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private bool IsAuthenticated = false;
+    private string Username = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            IsAuthenticated = true;
+            Username = user.Identity.Name ?? user.FindFirst(c => c.Type == "email")?.Value ?? "کاربر";
+        }
+    }
+
+    private async Task Logout()
+    {
+        await AuthClient.LogoutAsync();
+        NavigationManager.NavigateTo("/login", true);
+    }
+}

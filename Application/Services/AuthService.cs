@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Security.Claims;
 using System.Text;
 
@@ -18,14 +17,19 @@ namespace Application.Services
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IPasswordHasher<AuthUserDto> _passwordHasher;
+        private readonly IUserContextService _userContextService;
+        private readonly IPasswordHasher<User> _passwordHasher;
         private readonly JwtSettings _jwtSettings;
 
-        public AuthService(IUserRepository userRepository, IOptions<JwtSettings> jwtOptions, IPasswordHasher<AuthUserDto> passwordHasher)
+        public AuthService(IUserRepository userRepository,
+            IOptions<JwtSettings> jwtOptions,
+            IPasswordHasher<User> passwordHasher,
+            IUserContextService userContextService)
         {
             _jwtSettings = jwtOptions.Value;
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _userContextService = userContextService;
         }
 
         public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
@@ -34,9 +38,7 @@ namespace Application.Services
             if (existingUser is not null)
                 throw new Exception("نام کاربری قبلاً ثبت شده است.");
 
-            // ساخت هش رمز عبور
-            var authDto = new AuthUserDto();
-            var hashedPassword = _passwordHasher.HashPassword(authDto, request.Password);
+            var hashedPassword = _passwordHasher.HashPassword(new User(), request.Password);
 
             var user = new User
             {
@@ -73,10 +75,7 @@ namespace Application.Services
             if (user == null)
                 throw new Exception("نام کاربری یا رمز عبور اشتباه است.");
 
-            var authUserDto = new AuthUserDto { PasswordHash = user.PasswordHash };
-            var isPasswordValid = await ValidatePasswordAsync(request.Password, authUserDto);
-
-            if (!isPasswordValid)
+            if (!await ValidatePasswordAsync(request.Password, user.UserName))
                 throw new Exception("نام کاربری یا رمز عبور اشتباه است.");
 
             var jwtUser = new JwtUserDto
@@ -126,10 +125,15 @@ namespace Application.Services
             return await _userRepository.GetByUsernameAsync(username);
         }
 
-        public Task<bool> ValidatePasswordAsync(string password, AuthUserDto user)
+        public async Task<bool> ValidatePasswordAsync(string password, string userName)
         {
+            var user = await _userRepository.GetByUsernameAsync(userName);
+            if (user == null) return false;
+
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-            return Task.FromResult(result == PasswordVerificationResult.Success);
+            if (result == PasswordVerificationResult.Failed) return false;
+
+            return true;
         }
 
         public string GenerateToken(JwtUserDto user)
@@ -152,6 +156,31 @@ namespace Application.Services
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task UpdateProfileAsync(UpdateProfileRequest request)
+        {
+            var user = await _userRepository.GetByIdAsync(_userContextService.GetUserId());
+            if (user is null)
+                throw new Exception("کاربر یافت نشد");
+
+            var address = new Address(request.Address.Street, request.Address.City, request.Address.ZipCode);
+            user.UpdateProfile(request.FullName, request.Email, address); // متد دامین
+            await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task ChangePasswordAsync(ChangePasswordRequest request)
+        {
+            var user = await _userRepository.GetByIdAsync(_userContextService.GetUserId());
+            if (user is null)
+                throw new Exception("کاربر یافت نشد");
+
+
+            if (!await ValidatePasswordAsync(request.CurrentPassword, user.UserName))
+                throw new Exception("رمز فعلی نادرست است");
+
+            user.ChangePassword(_passwordHasher.HashPassword(user, request.NewPassword)); // متد دامین
+            await _userRepository.UpdateAsync(user);
         }
     }
 }

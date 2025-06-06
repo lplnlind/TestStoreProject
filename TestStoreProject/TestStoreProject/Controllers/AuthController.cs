@@ -56,5 +56,22 @@ namespace TestStoreProject.Controllers
 
             return Ok(profile);
         }
+
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request)
+        {
+            await _authService.UpdateProfileAsync(request);
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        {
+            await _authService.ChangePasswordAsync(request);
+            return NoContent();
+        }
+
     }
 }

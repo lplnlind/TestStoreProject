@@ -1,28 +1,49 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider  />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-<MudLayout>
-    <MudAppBar Color="Color.Primary" Elevation="4">
-        <MudText Typo="Typo.h6">فروشگاه من</MudText>
-    </MudAppBar>
+<MudRTLProvider RightToLeft="true">
+    <MudThemeProvider Theme="MyCustomTheme" />
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
 
-    <MudDrawer Open="true" Variant="DrawerVariant.Temporary" Elevation="2">
-        <MudNavMenu>
-            <MudNavLink Href="/products" Icon="@Icons.Material.Filled.List">محصولات</MudNavLink>
-            <MudNavLink Href="/categories" Icon="@Icons.Material.Filled.Category">دسته‌بندی‌ها</MudNavLink>
-        </MudNavMenu>
-    </MudDrawer>
+    <MudLayout>
+        <NavMenu></NavMenu>
 
-    <MudMainContent>
-        @Body
-    </MudMainContent>
-</MudLayout>
+        <MudMainContent>
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+</MudRTLProvider>
+
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "Dana", "Segoe UI" }
+            },
+
+            H5 = new H5Typography()
+            {
+                FontWeight = "800"
+            },
+
+            H6 = new H6Typography()
+            {
+                FontSize = "1.20rem",
+                FontWeight = "700"
+            }
+        }
+    };
+}

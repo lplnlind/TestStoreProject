@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Application.DTOs.Auth;
 using Microsoft.AspNetCore.Identity;
+using Domain.Entities;
 
 
 namespace Application.DependencyInjection
@@ -17,7 +18,13 @@ namespace Application.DependencyInjection
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IPasswordHasher<AuthUserDto>, PasswordHasher<AuthUserDto>>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IUserContextService, UserContextService>();
+            services.AddScoped<UserService, UserService>();
+
             return services;
         }
     }

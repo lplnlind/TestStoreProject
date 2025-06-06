@@ -1,18 +1,15 @@
 ﻿using Domain.Common;
 using Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Domain.ValueObjects;
 
 namespace Domain.Entities
 {
     public class Order : BaseEntity
     {
-        public int UserId { get; set; }
-        public DateTime OrderDate { get; set; }
-        public decimal TotalAmount { get; set; }
+        public int UserId { get; private set; }
+        public DateTime OrderDate { get; private set; } = DateTime.UtcNow;
+        public Address ShippingAddress { get; private set; }
+        public decimal TotalAmount { get; private set; }
 
         // وضعیت سفارش
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
@@ -20,5 +17,14 @@ namespace Domain.Entities
         // ارتباط با کاربر و آیتم‌های سفارش
         public User User { get; set; } = null!;
         public List<OrderItem> OrderItems { get; set; } = new();
+
+        public Order(int userId, Address shippingAddress, List<OrderItem> items, OrderStatus orderStatus)
+        {
+            UserId = userId;
+            ShippingAddress = shippingAddress;
+            OrderItems = items;
+            TotalAmount = OrderItems.Sum(x => x.UnitPrice * x.Quantity);
+            Status = orderStatus;
+        }
     }
 }

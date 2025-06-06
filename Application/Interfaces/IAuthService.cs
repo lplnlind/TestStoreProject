@@ -10,7 +10,11 @@ namespace Application.Interfaces
         Task<AuthResponse> LoginAsync(LoginRequest request);
         Task<UserProfileDto?> GetProfileAsync(ClaimsPrincipal user);
         Task<User?> GetUserByUsernameAsync(string username);
-        Task<bool> ValidatePasswordAsync(string password, AuthUserDto user);
+        Task<bool> ValidatePasswordAsync(string password, string userName);
         string GenerateToken(JwtUserDto user);
+
+        //Task<UserProfileDto> GetProfileAsync();
+        Task UpdateProfileAsync(UpdateProfileRequest request);
+        Task ChangePasswordAsync(ChangePasswordRequest request);
     }
 }

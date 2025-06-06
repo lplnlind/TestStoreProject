@@ -1,41 +1,32 @@
 ﻿@page "/products"
 @inject HttpClient Http
 
-<h3>لیست محصولات</h3>
+<MudGrid class="mt-10">
+    <MudItem lg="3">
+        <MudCard Class="rounded-xl pa-2">
+            <MudCardMedia Class="rounded-xl" Image="https://localhost:7207/images/products/door.jpg" Height="200" />
+            <MudCardContent>
+                <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h5">اوستا کیف</MudText>
+                    <MudIconButton Class="pa-1" Icon="@Icons.Material.Outlined.FavoriteBorder" Color="Color.Secondary" Size="Size.Small" aria-label="add to favorite" />
+                </MudStack>
+                <MudText Typo="Typo.body2">سایز: متوسط | جنس: چرم مصنوعی</MudText>
+            </MudCardContent>
+            <MudCardActions Class="pt-0 justify-space-between">
+                <MudButton Class="ro rounded-xl" Variant="Variant.Text" Color="Color.Primary">اضافه کردن به سبد</MudButton>
+                <MudStack Row AlignItems="AlignItems.Center" Spacing="1">
+                    @* <MudText Inline="true">@(("500").En2Fa())</MudText> *@
+                    <MudText Inline="true" typo="Typo.h5">@(("50").En2Fa())</MudText>
+                    <MudText Inline="true" Typo="Typo.caption">تومان</MudText>
+                </MudStack>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
 
-@if (products is null)
-{
-    <p>در حال بارگذاری...</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>نام</th>
-                <th>قیمت</th>
-                <th>دسته‌بندی</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in products)
-            {
-                <tr>
-                    <td>@product.Name</td>
-                    <td>@product.Price.ToString("N0")</td>
-                    <td>@product.CategoryId</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary">ویرایش</button>
-                        <button class="btn btn-sm btn-danger">حذف</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
 
 @code {
+    private int a = 50;
     List<ProductDto>? products;
 
     protected override async Task OnInitializedAsync()
